@@ -9,8 +9,15 @@ function detectSilence(
     onSoundEnd = _=>{},
     onSoundStart = _=>{},
     silence_delay = 500,
-    min_decibels = -40
     ) {
+    let min_decibels = (parseInt(document.getElementById('min-decibels').value)||-40)
+    document.getElementById('min-decibels').addEventListener('keyup', () => {
+        min_decibels = (parseInt(document.getElementById('min-decibels').value)||-40)
+        console.log('min-decibels: ' + min_decibels)
+        if(min_decibels < -30){
+            analyser.minDecibels = min_decibels;
+        }
+    })
     const ctx = new AudioContext();
     const analyser = ctx.createAnalyser();
     const streamNode = ctx.createMediaStreamSource(stream);
@@ -42,9 +49,11 @@ function detectSilence(
   
   function onSilence() {
     console.log('silence');
+    document.getElementById('status').textContent = 'silence'
   }
   function onSpeak() {
     console.log('speaking');
+    document.getElementById('status').textContent = 'speaking'
   }
   
   navigator.mediaDevices.getUserMedia({
