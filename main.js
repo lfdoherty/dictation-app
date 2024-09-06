@@ -1,4 +1,9 @@
 
+function arrayMax(arr) {
+    return arr.reduce(function (p, v) {
+      return ( p > v ? p : v );
+    });
+  }
 function detectSilence(
     stream,
     onSoundEnd = _=>{},
@@ -19,6 +24,7 @@ function detectSilence(
     function loop(time) {
       requestAnimationFrame(loop); // we'll loop every 60th of a second to check
       analyser.getByteFrequencyData(data); // get current data
+      console.log(data)
       if (data.some(v => v)) { // if there is data above the given db limit
         if(triggered){
           triggered = false;
