@@ -9,7 +9,7 @@ function detectSilence(
     onSoundEnd = _=>{},
     onSoundStart = _=>{},
     silence_delay = 500,
-    min_decibels = -80
+    min_decibels = -40
     ) {
     const ctx = new AudioContext();
     const analyser = ctx.createAnalyser();
@@ -24,7 +24,7 @@ function detectSilence(
     function loop(time) {
       requestAnimationFrame(loop); // we'll loop every 60th of a second to check
       analyser.getByteFrequencyData(data); // get current data
-      console.log(data)
+      ///console.log(data)
       if (data.some(v => v)) { // if there is data above the given db limit
         if(triggered){
           triggered = false;
