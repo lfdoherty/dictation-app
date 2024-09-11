@@ -9,10 +9,8 @@ openWebsocket()
 
 function openWebsocket(){
 
-	//localSocket = new WebSocket("ws://192.168.8.100:5478");
 	localSocket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
 	localSocket.addEventListener("open", (event) => {
-	  //socket.send("Hello Server!");
 	  localSocket.send(clientAuthKey)
 	});
 	localSocket.addEventListener("message", (event) => {
@@ -31,65 +29,15 @@ function openWebsocket(){
 	localSocket.addEventListener("close", (event) => {
 		setTimeout(openWebsocket, 100)
 	});
-	localSocket.addEventListener("ping", (event) => {
-		//setTimeout(openWebsocket, 100)
-	});
 }
 
 setInterval(function(){
 	
 }, 2000)
-/*
-function arrayMax(arr) {
-	return arr.reduce(function (p, v) {
-		return ( p > v ? p : v );
-	});
-	}
-function detectSilence(
-	stream,
-	onSoundEnd = _=>{},
-	onSoundStart = _=>{},
-	) {
-	let min_decibels = (parseInt(document.getElementById('min-decibels').value)||-40)
-	document.getElementById('min-decibels').addEventListener('keyup', () => {
-		min_decibels = (parseInt(document.getElementById('min-decibels').value)||-40)
-		console.log('min-decibels: ' + min_decibels)
-		if(min_decibels < -30){
-			analyser.minDecibels = min_decibels;
-		}
-	})
-	const ctx = new AudioContext();
-	const analyser = ctx.createAnalyser();
-	const streamNode = ctx.createMediaStreamSource(stream);
-	streamNode.connect(analyser);
-	analyser.minDecibels = min_decibels;
-	
-	const data = new Uint8Array(analyser.frequencyBinCount); // will hold our data
-	let silence_start = performance.now();
-	let triggered = false; // trigger only once per silence event
-	
-	function loop(time) {
-		requestAnimationFrame(loop); // we'll loop every 60th of a second to check
-		analyser.getByteFrequencyData(data); // get current data
-		///console.log(data)
-		if (data.some(v => v)) { // if there is data above the given db limit
-		if(triggered){
-			triggered = false;
-			onSoundStart();
-			}
-		silence_start = time; // set it to now
-		}
-		if (!triggered && time - silence_start > silenceDelay) {
-		onSoundEnd();
-		triggered = true;
-		}
-	}
-	loop();
-}
-*/
+
 async function sendAudioToServer(mimetype, data){
 	console.log(mimetype, data.byteLength)
-	//just do generic data logging - we have some user-created data, with a format, and some metadata about its creation time and purpose
+
 	if(!mimetype.startsWith('audio/webm')){
 		console.log('todo support: ' + mimetype)
 		return
@@ -99,16 +47,11 @@ async function sendAudioToServer(mimetype, data){
 	const filename = 'dictation_audio_segment_'+timestamp+'.webm'
 	const tags = ['dictation', 'audio', 'for-stt']
 
-	/*const response = await fetch("http://192.168.8.100", {
-		method: "POST",
-		body: JSON.stringify({ username: "example" }),
-	});*/
-	//console.log(localSocket.readyState)
 	if(waitingForAuth || localSocket.readyState !== WebSocket.OPEN){
 		console.log('todo queue until auth - for now, discarded msg')
 		return
 	}
-	const enc = new TextEncoder(); // always utf-8
+	const enc = new TextEncoder();
 	const header = enc.encode((JSON.stringify({type: 'file', tags: tags, name: filename, mimetype: mimetype})));
 	const lenTemp = new ArrayBuffer(4)
 	const dv = new DataView(lenTemp)
@@ -120,12 +63,12 @@ async function sendAudioToServer(mimetype, data){
 	full.set(data, 4 + header.length)
 	console.log(data)
 	localSocket.send(full)
-	//localSocket.send(data)
 }
 
 
 navigator.mediaDevices.getUserMedia({
-	audio: true
+	audio: true,
+	video: false,
 })
 .then(stream => {
 	const recorder = new MediaRecorder(stream);
@@ -137,8 +80,6 @@ navigator.mediaDevices.getUserMedia({
 				const ab = await request.arrayBuffer();
 				console.log(blobURL, ab);
 				sendAudioToServer(e.data.type, ab)
-					// recognition.onresult = handleResult;
-				// URL.revokeObjectURL(blobURL);
 			} catch (err) {
 				throw err
 			}
@@ -164,15 +105,12 @@ navigator.mediaDevices.getUserMedia({
 		onSilence()
 	})
 	b.addEventListener('touchstart', ()=> {
-		console.log('down')
+		console.log('touchstart')
 		onSpeak()
 	})
 	document.addEventListener('touchend', ()=> {
-		console.log('up')
+		console.log('touchend')
 		onSilence()
 	})
-	///detectSilence(stream, onSilence, onSpeak);
-	//recorder.start()
-	// do something else with the stream
 })
 .catch(console.error);
