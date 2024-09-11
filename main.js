@@ -2,21 +2,24 @@ const silenceDelay = 2000;
 
 
 const serverAuthKey = 'dfb0f59e-8f80-4329-9fcb-d1e90a6a7834--8bbcd38b-884b-4db2-bacd-ce5a9e70ea23'
-
+const clientAuthKey = '0d5d996e-7191-4651-bf03-0d1d166f05b6'
 let localSocket;
 let waitingForAuth = true
 openWebsocket()
 
 function openWebsocket(){
 
-	localSocket = new WebSocket("ws://192.168.8.100:5478");
+	//localSocket = new WebSocket("ws://192.168.8.100:5478");
+	localSocket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
 	localSocket.addEventListener("open", (event) => {
 	  //socket.send("Hello Server!");
+	  localSocket.send(clientAuthKey)
 	});
 	localSocket.addEventListener("message", (event) => {
 	  if(waitingForAuth){
 		if(event.data === serverAuthKey){
 			waitingForAuth = false
+			console.log('got pipe auth')
 			return
 		}
 	  }
@@ -28,8 +31,14 @@ function openWebsocket(){
 	localSocket.addEventListener("close", (event) => {
 		setTimeout(openWebsocket, 100)
 	});
+	localSocket.addEventListener("ping", (event) => {
+		//setTimeout(openWebsocket, 100)
+	});
 }
 
+setInterval(function(){
+	
+}, 2000)
 /*
 function arrayMax(arr) {
 	return arr.reduce(function (p, v) {
@@ -94,12 +103,24 @@ async function sendAudioToServer(mimetype, data){
 		method: "POST",
 		body: JSON.stringify({ username: "example" }),
 	});*/
-	if(waitingForAuth){
+	//console.log(localSocket.readyState)
+	if(waitingForAuth || localSocket.readyState !== WebSocket.OPEN){
 		console.log('todo queue until auth - for now, discarded msg')
 		return
 	}
-	localSocket.send(JSON.stringify({type: 'file', tags: tags, name: filename, mimetype: mimetype}))
-	localSocket.send(data)
+	const enc = new TextEncoder(); // always utf-8
+	const header = enc.encode((JSON.stringify({type: 'file', tags: tags, name: filename, mimetype: mimetype})));
+	const lenTemp = new ArrayBuffer(4)
+	const dv = new DataView(lenTemp)
+	dv.setUint32(0, header.length)
+	data = new Uint8Array(data)
+	const full = new Uint8Array(4+header.length + data.length)
+	full.set(new Uint8Array(lenTemp))
+	full.set(header, 4)
+	full.set(data, 4 + header.length)
+	console.log(data)
+	localSocket.send(full)
+	//localSocket.send(data)
 }
 
 
