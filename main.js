@@ -146,12 +146,12 @@ navigator.mediaDevices.getUserMedia({
 		}
 	function onSilence() {
 		//console.log('silence');
-		//document.getElementById('status').textContent = 'silence'
+		document.getElementById('status').textContent = 'silence'
 		recorder.stop();
 	}
 	function onSpeak() {
 		//console.log('speaking');
-		//document.getElementById('status').textContent = 'speaking'
+		document.getElementById('status').textContent = 'speaking'
 		recorder.start()
 	}
 	const b = document.getElementById('dictation-button');
