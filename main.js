@@ -163,11 +163,11 @@ navigator.mediaDevices.getUserMedia({
 		console.log('up')
 		onSilence()
 	})
-	b.addEventListener('touchdown', ()=> {
+	b.addEventListener('touchstart', ()=> {
 		console.log('down')
 		onSpeak()
 	})
-	document.addEventListener('touchup', ()=> {
+	document.addEventListener('touchend', ()=> {
 		console.log('up')
 		onSilence()
 	})
