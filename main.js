@@ -104,6 +104,10 @@ function startRecorder(){
 					const ab = await request.arrayBuffer();
 					console.log(blobURL, ab);
 					sendAudioToServer(e.data.type, ab)
+
+					stream.getTracks().forEach(function(track) {
+						track.stop();
+					});
 				} catch (err) {
 					throw err
 				}
