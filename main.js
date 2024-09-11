@@ -163,6 +163,14 @@ navigator.mediaDevices.getUserMedia({
 		console.log('up')
 		onSilence()
 	})
+	b.addEventListener('touchdown', ()=> {
+		console.log('down')
+		onSpeak()
+	})
+	document.addEventListener('touchup', ()=> {
+		console.log('up')
+		onSilence()
+	})
 	///detectSilence(stream, onSilence, onSpeak);
 	//recorder.start()
 	// do something else with the stream
