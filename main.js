@@ -65,52 +65,66 @@ async function sendAudioToServer(mimetype, data){
 	localSocket.send(full)
 }
 
-
-navigator.mediaDevices.getUserMedia({
-	audio: true,
-	video: false,
-})
-.then(stream => {
-	const recorder = new MediaRecorder(stream);
-	recorder.ondataavailable = async(e) => {
-		if (stream.active) {
-			try {
-				const blobURL = URL.createObjectURL(e.data);
-				const request = await fetch(blobURL);
-				const ab = await request.arrayBuffer();
-				console.log(blobURL, ab);
-				sendAudioToServer(e.data.type, ab)
-			} catch (err) {
-				throw err
-			}
-		}
-		}
-	function onSilence() {
-		//console.log('silence');
-		document.getElementById('status').textContent = 'silence'
-		recorder.stop();
-	}
-	function onSpeak() {
-		//console.log('speaking');
-		document.getElementById('status').textContent = 'speaking'
-		recorder.start()
-	}
+let currentRecorder
+document.addEventListener('DOMContentLoaded', () => {
 	const b = document.getElementById('dictation-button');
 	b.addEventListener('mousedown', ()=> {
-		console.log('down')
-		onSpeak()
+		//console.log('down')
+		//onSpeak()
+		startRecorder()
 	})
 	document.addEventListener('mouseup', ()=> {
 		console.log('up')
-		onSilence()
+		if(currentRecorder) currentRecorder.finish()//onSilence()
 	})
 	b.addEventListener('touchstart', ()=> {
 		console.log('touchstart')
-		onSpeak()
+		//onSpeak()
+		startRecorder()
 	})
 	document.addEventListener('touchend', ()=> {
 		console.log('touchend')
-		onSilence()
+		if(currentRecorder) currentRecorder.finish()
+		//onSilence()
 	})
 })
-.catch(console.error);
+
+function startRecorder(){
+	navigator.mediaDevices.getUserMedia({
+		audio: true,
+		video: false,
+	})
+	.then(stream => {
+		const recorder = new MediaRecorder(stream);
+		recorder.ondataavailable = async(e) => {
+			if (stream.active) {
+				try {
+					const blobURL = URL.createObjectURL(e.data);
+					const request = await fetch(blobURL);
+					const ab = await request.arrayBuffer();
+					console.log(blobURL, ab);
+					sendAudioToServer(e.data.type, ab)
+				} catch (err) {
+					throw err
+				}
+			}
+			}
+		/*function onSilence() {
+			//console.log('silence');
+			
+		}
+		function onSpeak() {
+			//console.log('speaking');
+			
+		}*/
+		currentRecorder = {
+			finish(){
+				document.getElementById('status').textContent = 'silence'
+				recorder.stop();
+			}
+		}
+		recorder.start()
+		document.getElementById('status').textContent = 'recording'
+	})
+	.catch(console.error);
+}
