@@ -1,12 +1,43 @@
 const silenceDelay = 2000;
 
+//this is not real
+//const serverAuthKey = 'dfb0f59e-8f80-4329-9fcb-d1e90a6a7834--8bbcd38b-884b-4db2-bacd-ce5a9e70ea23'
+//const clientAuthKey = '0d5d996e-7191-4651-bf03-0d1d166f05b6'
 
-const serverAuthKey = 'dfb0f59e-8f80-4329-9fcb-d1e90a6a7834--8bbcd38b-884b-4db2-bacd-ce5a9e70ea23'
-const clientAuthKey = '0d5d996e-7191-4651-bf03-0d1d166f05b6'
+let authKey = localStorage.getItem('authKey')
+let serverAuthKey, clientAuthKey
+
 let localSocket;
 let waitingForAuth = true
-openWebsocket()
 
+document.addEventListener('DOMContentLoaded', ()=>{
+	if(!authKey){
+		/*const authKeyEntry = document.getElementById('auth-key-entry');
+		authKeyEntry.style.display = 'block'
+		authKeyEntryDoneButton = document.getElementById('auth-key-entry-done-button');
+		authKeyEntryDoneButton.addEventListener('click', () => {
+			authKey = document.getElementById('auth-key-entry-box').value;
+			localStorage.setItem('authKey', authKey)
+			;[serverAuthKey, clientAuthKey] = authKey.split(':')
+			openWebsocket()
+		})*/
+		authKey = window.location.hash
+		console.log(authKey)
+		window.location.hash = ''
+		if(authKey){
+			localStorage.setItem('authKey', authKey)
+			;[serverAuthKey, clientAuthKey] = authKey.split('_')
+			openWebsocket()
+			loadApp()
+		}else{
+			document.body.textContent = 'ERROR - NO AUTH'
+		}
+	}else{
+		;[serverAuthKey, clientAuthKey] = authKey.split(':')
+		openWebsocket()
+		loadApp()
+	}
+})
 function openWebsocket(){
 
 	localSocket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
@@ -66,7 +97,7 @@ async function sendAudioToServer(mimetype, data){
 }
 
 let currentRecorder
-document.addEventListener('DOMContentLoaded', () => {
+function loadApp(){
 	const b = document.getElementById('dictation-button');
 	b.addEventListener('mousedown', ()=> {
 		//console.log('down')
@@ -87,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if(currentRecorder) currentRecorder.finish()
 		//onSilence()
 	})
-})
+}
 
 function startRecorder(){
 	navigator.mediaDevices.getUserMedia({
