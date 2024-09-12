@@ -101,6 +101,9 @@ function loadApp(){
 }
 
 function stopRecorder(){
+	if(!recordingStarted){
+		return
+	}
 	if(currentRecorder){
 		currentRecorder.finish()
 	}else{
