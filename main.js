@@ -1,22 +1,11 @@
-const silenceDelay = 2000;
-
 let authKey = localStorage.getItem('authKey')
 let serverAuthKey, clientAuthKey
 
-let localSocket;
+let socket;
 let waitingForAuth = true
 
 document.addEventListener('DOMContentLoaded', ()=>{
 	if(!authKey){
-		/*const authKeyEntry = document.getElementById('auth-key-entry');
-		authKeyEntry.style.display = 'block'
-		authKeyEntryDoneButton = document.getElementById('auth-key-entry-done-button');
-		authKeyEntryDoneButton.addEventListener('click', () => {
-			authKey = document.getElementById('auth-key-entry-box').value;
-			localStorage.setItem('authKey', authKey)
-			;[serverAuthKey, clientAuthKey] = authKey.split(':')
-			openWebsocket()
-		})*/
 		authKey = window.location.hash.substring(1)
 		console.log(authKey)
 		window.location.hash = ''
@@ -36,11 +25,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })
 function openWebsocket(){
 
-	localSocket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
-	localSocket.addEventListener("open", (event) => {
-	  localSocket.send(clientAuthKey)
+	socket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
+	socket.addEventListener("open", (event) => {
+	  socket.send(clientAuthKey)
 	});
-	localSocket.addEventListener("message", (event) => {
+	socket.addEventListener("message", (event) => {
 	  if(waitingForAuth){
 		if(event.data === serverAuthKey){
 			waitingForAuth = false
@@ -50,17 +39,13 @@ function openWebsocket(){
 	  }
 	  console.log("Message from server ", event.data);
 	});
-	localSocket.addEventListener("error", (event) => {
+	socket.addEventListener("error", (event) => {
 		console.log('local socket error: ', event)
 	});
-	localSocket.addEventListener("close", (event) => {
+	socket.addEventListener("close", (event) => {
 		setTimeout(openWebsocket, 100)
 	});
 }
-
-setInterval(function(){
-	
-}, 2000)
 
 async function sendAudioToServer(mimetype, data){
 	console.log(mimetype, data.byteLength)
@@ -74,7 +59,7 @@ async function sendAudioToServer(mimetype, data){
 	const filename = 'dictation_audio_segment_'+timestamp+'.webm'
 	const tags = ['dictation', 'audio', 'for-stt']
 
-	if(waitingForAuth || localSocket.readyState !== WebSocket.OPEN){
+	if(waitingForAuth || socket.readyState !== WebSocket.OPEN){
 		console.log('todo queue until auth - for now, discarded msg')
 		return
 	}
@@ -89,37 +74,51 @@ async function sendAudioToServer(mimetype, data){
 	full.set(header, 4)
 	full.set(data, 4 + header.length)
 	console.log(data)
-	localSocket.send(full)
+	socket.send(full)
 }
 
 let currentRecorder
+let recordingStarted = false
 function loadApp(){
 	const b = document.getElementById('dictation-button');
 	b.addEventListener('mousedown', ()=> {
-		if(currentRecorder) {console.log('already speaking'); return}
+		if(recordingStarted) {console.log('already speaking'); return}
 		startRecorder()
 	})
 	document.addEventListener('mouseup', ()=> {
-		console.log('mouseup')		
-		if(currentRecorder) currentRecorder.finish()//onSilence()
+		console.log('mouseup')
+		stopRecorder()
 	})
 	b.addEventListener('touchstart', ()=> {
 		console.log('touchstart')
-		if(currentRecorder) {console.log('already speaking'); return}
+		if(recordingStarted) {console.log('already speaking'); return}
 		startRecorder()
 	})
 	document.addEventListener('touchend', ()=> {
 		console.log('touchend')
-		if(currentRecorder) currentRecorder.finish()
+		stopRecorder()
 	})
 }
 
+function stopRecorder(){
+	if(currentRecorder){
+		currentRecorder.finish()
+	}else{
+		document.getElementById('status').textContent = 'stopped fast'
+	}
+	recordingStarted = false
+}
 function startRecorder(){
+	recordingStarted = true
+
 	navigator.mediaDevices.getUserMedia({
 		audio: true,
 		video: false,
 	})
 	.then(stream => {
+		if(!recordingStarted){
+			return
+		}
 		const recorder = new MediaRecorder(stream);
 		recorder.ondataavailable = async(e) => {
 			if (stream.active) {
@@ -137,18 +136,10 @@ function startRecorder(){
 					throw err
 				}
 			}
-			}
-		/*function onSilence() {
-			//console.log('silence');
-			
 		}
-		function onSpeak() {
-			//console.log('speaking');
-			
-		}*/
 		currentRecorder = {
 			finish(){
-				document.getElementById('status').textContent = 'silence'
+				document.getElementById('status').textContent = 'stopped recorder'
 				recorder.stop();
 				currentRecorder = undefined;
 			}
