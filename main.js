@@ -126,8 +126,12 @@ function startRecorder(){
 					const blobURL = URL.createObjectURL(e.data);
 					const request = await fetch(blobURL);
 					const ab = await request.arrayBuffer();
-					console.log(blobURL, ab);
-					sendAudioToServer(e.data.type, ab)
+					if(ab.byteLength > 0){
+						console.log(blobURL, ab);
+						sendAudioToServer(e.data.type, ab)
+					}else{
+						console.log('discarding empty sound clip')
+					}
 
 					stream.getTracks().forEach(function(track) {
 						track.stop();
