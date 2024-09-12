@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 			;[serverAuthKey, clientAuthKey] = authKey.split(':')
 			openWebsocket()
 		})*/
-		authKey = window.location.hash
+		authKey = window.location.hash.substring(1)
 		console.log(authKey)
 		window.location.hash = ''
 		if(authKey){
