@@ -1,9 +1,5 @@
 const silenceDelay = 2000;
 
-//this is not real
-//const serverAuthKey = 'dfb0f59e-8f80-4329-9fcb-d1e90a6a7834--8bbcd38b-884b-4db2-bacd-ce5a9e70ea23'
-//const clientAuthKey = '0d5d996e-7191-4651-bf03-0d1d166f05b6'
-
 let authKey = localStorage.getItem('authKey')
 let serverAuthKey, clientAuthKey
 
