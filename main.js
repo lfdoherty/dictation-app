@@ -96,23 +96,21 @@ let currentRecorder
 function loadApp(){
 	const b = document.getElementById('dictation-button');
 	b.addEventListener('mousedown', ()=> {
-		//console.log('down')
-		//onSpeak()
+		if(currentRecorder) {console.log('already speaking'); return}
 		startRecorder()
 	})
 	document.addEventListener('mouseup', ()=> {
-		console.log('up')
+		console.log('mouseup')		
 		if(currentRecorder) currentRecorder.finish()//onSilence()
 	})
 	b.addEventListener('touchstart', ()=> {
 		console.log('touchstart')
-		//onSpeak()
+		if(currentRecorder) {console.log('already speaking'); return}
 		startRecorder()
 	})
 	document.addEventListener('touchend', ()=> {
 		console.log('touchend')
 		if(currentRecorder) currentRecorder.finish()
-		//onSilence()
 	})
 }
 
@@ -152,6 +150,7 @@ function startRecorder(){
 			finish(){
 				document.getElementById('status').textContent = 'silence'
 				recorder.stop();
+				currentRecorder = undefined;
 			}
 		}
 		recorder.start()
