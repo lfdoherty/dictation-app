@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 			document.body.textContent = 'ERROR - NO AUTH'
 		}
 	}else{
-		;[serverAuthKey, clientAuthKey] = authKey.split(':')
+		;[serverAuthKey, clientAuthKey] = authKey.split('_')
 		openWebsocket()
 		loadApp()
 	}
