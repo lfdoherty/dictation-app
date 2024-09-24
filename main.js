@@ -69,10 +69,11 @@ async function sendAudioToServer(mimetype, data){
 	const dv = new DataView(lenTemp)
 	dv.setUint32(0, header.length)
 	data = new Uint8Array(data)
-	const full = new Uint8Array(4+header.length + data.length)
-	full.set(new Uint8Array(lenTemp))
-	full.set(header, 4)
-	full.set(data, 4 + header.length)
+	const full = new Uint8Array(1+4+header.length + data.length)
+	full[0] = 1;//1=SaveFile
+	full.set(new Uint8Array(lenTemp), 1)
+	full.set(header, 1+4)
+	full.set(data, 1+4 + header.length)
 	console.log(data)
 	socket.send(full)
 }
