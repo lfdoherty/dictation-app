@@ -59,8 +59,8 @@ function handleMessageFromServer(data){
 	if(type === 1){//VirtualFileUpdate
 		const metadataLen = dv.getUint32(1)
 		const dataLen = dv.getUint32(1+4)
-		const metadataBuf = data.subarray(1+4+4, 1+4+4+metadataLen)
-		const dataBuf = data.subarray(1+4+4+metadataLen, 1+4+4+metadataLen+dataLen)
+		const metadataBuf = data.slice(1+4+4, 1+4+4+metadataLen)
+		const dataBuf = data.slice(1+4+4+metadataLen, 1+4+4+metadataLen+dataLen)
 		const metadata = JSON.parse(metadataBuf.toString())
 		handleVirtualFileUpdate(metadata, dataBuf)
 	}
