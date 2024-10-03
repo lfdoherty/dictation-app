@@ -40,7 +40,7 @@ function openWebsocket(){
 		}
 	  }
 	  handleMessageFromServer(event.data)
-	  //console.log("Message from server ", event.data);
+	  console.log("Message from server ", event.data);
 	});
 	socket.addEventListener("error", (event) => {
 		console.log('local socket error: ', event)
