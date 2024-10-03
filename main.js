@@ -61,7 +61,8 @@ function handleMessageFromServer(data){
 		const dataLen = dv.getUint32(1+4)
 		const metadataBuf = data.slice(1+4+4, 1+4+4+metadataLen)
 		const dataBuf = data.slice(1+4+4+metadataLen, 1+4+4+metadataLen+dataLen)
-		const metadata = JSON.parse(metadataBuf.toString())
+		const td = new TextDecoder()
+		const metadata = JSON.parse(td.decode(metadataBuf))
 		handleVirtualFileUpdate(metadata, dataBuf)
 	}
 }
