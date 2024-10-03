@@ -39,8 +39,9 @@ function openWebsocket(){
 			return
 		}
 	  }
-	  event.data.arrayBuffer().then(dataArr => {
-		handleMessageFromServer(edataArr)
+	  event.data.arrayBuffer().then(arrayBuf => {
+		const dataArr = new Uint8Array(arrayBuf)
+		handleMessageFromServer(dataArr)
 		console.log("Message from server ", dataArr);
 		})
 	});
