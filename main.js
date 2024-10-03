@@ -72,6 +72,9 @@ function handleMessageFromServer(data){
 
 function handleVirtualFileUpdate(metadata, dataBuf){
 	if(metadata.path === 'task-app.html'){
+		const td = new TextDecoder()
+		const str = td.decode(dataBuf)
+		console.log(str)
 		console.log('TODO - got task-app.html virtual file update')
 	}
 }
