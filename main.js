@@ -53,9 +53,9 @@ function openWebsocket(){
 	});
 }
 function handleMessageFromServer(data){
-	const type = data[0]
+	const dv = new DataView(data)
+	const type = dv.getUint8(0)
 	if(type === 1){//VirtualFileUpdate
-		const dv = new DataView(data)
 		const metadataLen = dv.getUint32(1)
 		const dataLen = dv.getUint32(1+4)
 		const metadataBuf = data.subarray(1+4+4, 1+4+4+metadataLen)
