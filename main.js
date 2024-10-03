@@ -75,7 +75,12 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		const td = new TextDecoder()
 		const str = td.decode(dataBuf)
 		console.log(str)
-		console.log('TODO - got task-app.html virtual file update')
+		const iframe = document.createElement('iframe');
+		document.body.appendChild(iframe);
+		iframe.contentWindow.document.open();
+		iframe.contentWindow.document.write(str);
+		iframe.contentWindow.document.close();
+		//console.log('TODO - got task-app.html virtual file update')
 	}
 }
 
