@@ -30,19 +30,19 @@ function openWebsocket(){
 	  socket.send(clientAuthKey)
 	});
 	socket.addEventListener("message", (event) => {
-	  if(waitingForAuth){
-		if(event.data === serverAuthKey){
-			waitingForAuth = false
-			console.log('got pipe auth')
+		if(waitingForAuth){
+			if(event.data === serverAuthKey){
+				waitingForAuth = false
+				console.log('got pipe auth')
 
-			listenForTaskAppFromServer()
-			return
+				listenForTaskAppFromServer()
+				return
+			}
 		}
-	  }
-	  event.data.arrayBuffer().then(arrayBuf => {
-		const dataArr = new Uint8Array(arrayBuf)
-		handleMessageFromServer(dataArr)
-		console.log("Message from server ", dataArr);
+	  	event.data.arrayBuffer().then(arrayBuf => {
+			const dataArr = new Uint8Array(arrayBuf)
+			handleMessageFromServer(dataArr)
+			console.log("Message from server ", dataArr);
 		})
 	});
 	socket.addEventListener("error", (event) => {
