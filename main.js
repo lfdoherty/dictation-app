@@ -40,9 +40,9 @@ function openWebsocket(){
 			}
 		}
 	  	event.data.arrayBuffer().then(arrayBuf => {
-			const dataArr = new Uint8Array(arrayBuf)
-			handleMessageFromServer(dataArr)
-			console.log("Message from server ", dataArr);
+			//const dataArr = new Uint8Array(arrayBuf)
+			handleMessageFromServer(arrayBuf)
+			console.log("Message from server ", arrayBuf);
 		})
 	});
 	socket.addEventListener("error", (event) => {
