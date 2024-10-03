@@ -34,10 +34,13 @@ function openWebsocket(){
 		if(event.data === serverAuthKey){
 			waitingForAuth = false
 			console.log('got pipe auth')
+
+			listenForTaskAppFromServer()
 			return
 		}
 	  }
-	  console.log("Message from server ", event.data);
+	  handleMessageFromServer(event.data)
+	  //console.log("Message from server ", event.data);
 	});
 	socket.addEventListener("error", (event) => {
 		console.log('local socket error: ', event)
@@ -46,8 +49,39 @@ function openWebsocket(){
 		setTimeout(openWebsocket, 100)
 	});
 }
+function handleMessageFromServer(data){
+	const type = data[0]
+	if(type === 1){//VirtualFileUpdate
+		const dv = new DataView(data)
+		const metadataLen = dv.getUint32(1)
+		const dataLen = dv.getUint32(1+4)
+		const metadataBuf = data.subarray(1+4+4, 1+4+4+metadataLen)
+		const dataBuf = data.subarray(1+4+4+metadataLen, 1+4+4+metadataLen+dataLen)
+		const metadata = JSON.parse(metadataBuf.toString())
+		handleVirtualFileUpdate(metadata, dataBuf)
+	}
+}
+function handleVirtualFileUpdate(metadata, dataBuf){
+	if(metadata.path === 'task-app.html'){
+		console.log('TODO - got task-app.html virtual file update')
+	}
+}
 
-async function sendAudioToServer(mimetype, data){
+function listenForTaskAppFromServer(){
+
+	const enc = new TextEncoder();
+	const header = enc.encode('task-app.html');
+	const lenTemp = new ArrayBuffer(4)
+	const dv = new DataView(lenTemp)
+	dv.setUint32(0, header.length)
+	const full = new Uint8Array(1+4+header.length)
+	full[0] = 2;//2=SubscribeToVirtualFile
+	full.set(new Uint8Array(lenTemp), 1)
+	full.set(header, 1+4)
+	socket.send(full)
+}
+
+function sendAudioToServer(mimetype, data){
 	console.log(mimetype, data.byteLength)
 
 	if(!mimetype.startsWith('audio/webm')){
