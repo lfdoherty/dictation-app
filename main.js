@@ -52,6 +52,7 @@ function openWebsocket(){
 		setTimeout(openWebsocket, 100)
 	});
 }
+
 function handleMessageFromServer(data){
 	const dv = new DataView(data)
 	const type = dv.getUint8(0)
