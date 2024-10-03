@@ -39,8 +39,10 @@ function openWebsocket(){
 			return
 		}
 	  }
-	  handleMessageFromServer(event.data)
-	  console.log("Message from server ", event.data);
+	  event.data.arrayBuffer().then(dataArr => {
+		handleMessageFromServer(edataArr)
+		console.log("Message from server ", dataArr);
+		})
 	});
 	socket.addEventListener("error", (event) => {
 		console.log('local socket error: ', event)
