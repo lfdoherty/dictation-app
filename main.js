@@ -68,7 +68,7 @@ function handleMessageFromServer(data){
 }
 
 
-//oooosss
+//oooossssss
 
 function handleVirtualFileUpdate(metadata, dataBuf){
 	if(metadata.path === 'task-app.html'){
