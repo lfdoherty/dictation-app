@@ -94,16 +94,22 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 
 function listenForTaskAppFromServer(){
 
-	const enc = new TextEncoder();
-	const header = enc.encode('task-app.html');
-	const lenTemp = new ArrayBuffer(4)
-	const dv = new DataView(lenTemp)
-	dv.setUint32(0, header.length)
-	const full = new Uint8Array(1+4+header.length)
-	full[0] = 2;//2=SubscribeToVirtualFile
-	full.set(new Uint8Array(lenTemp), 1)
-	full.set(header, 1+4)
-	socket.send(full)
+	function subscribeToFile(name){
+		const enc = new TextEncoder();
+		const header = enc.encode(name);
+		const lenTemp = new ArrayBuffer(4)
+		const dv = new DataView(lenTemp)
+		dv.setUint32(0, header.length)
+		const full = new Uint8Array(1+4+header.length)
+		full[0] = 2;//2=SubscribeToVirtualFile
+		full.set(new Uint8Array(lenTemp), 1)
+		full.set(header, 1+4)
+		socket.send(full)
+	}
+	subscribeToFile('task-app.html')
+	subscribeToFile('task-app.js')
+	subscribeToFile('task-app.css')
+	subscribeToFile('task-app.json')
 }
 
 function sendAudioToServer(mimetype, data){
