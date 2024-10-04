@@ -40,7 +40,6 @@ function openWebsocket(){
 			}
 		}
 	  	event.data.arrayBuffer().then(arrayBuf => {
-			//const dataArr = new Uint8Array(arrayBuf)
 			handleMessageFromServer(arrayBuf)
 			console.log("Message from server ", arrayBuf);
 		})
@@ -173,8 +172,9 @@ function sendAudioToServer(mimetype, data){
 		console.log('todo queue until auth - for now, discarded msg')
 		return
 	}
-	const enc = new TextEncoder();
-	const header = enc.encode((JSON.stringify({type: 'file', tags: tags, name: filename, mimetype: mimetype})));
+	saveFile({type: 'file', tags: tags, name: filename, mimetype: mimetype}, data)
+	/*const enc = new TextEncoder();
+	const header = enc.encode((JSON.stringify()));
 	const lenTemp = new ArrayBuffer(4)
 	const dv = new DataView(lenTemp)
 	dv.setUint32(0, header.length)
@@ -185,7 +185,7 @@ function sendAudioToServer(mimetype, data){
 	full.set(header, 1+4)
 	full.set(data, 1+4 + header.length)
 	console.log(data)
-	socket.send(full)
+	socket.send(full)*/
 }
 
 let currentRecorder
