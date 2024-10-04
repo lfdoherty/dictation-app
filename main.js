@@ -82,27 +82,28 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		document.getElementById('app-body').innerHTML = taskAppFiles.get('task-app.html')
 		const js = document.createElement("script");
 		js.id = 'task-app-js'
-		js.textContent = taskAppFiles.get('task-app.js')
+		const jsUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.js')]))
+		js.src = jsUrl//textContent = taskAppFiles.get('task-app.js')
 		document.head.appendChild(js);
 
 		
 		//just for ease of debugging
 		const jsonTag = document.createElement("script");
 		jsonTag.id = 'task-app-json'
-		jsonTag.textContent = taskAppFiles.get('task-app.json')
+		const jsonUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.json')]))
+		jsonTag.src = jsonUrl//textContent = taskAppFiles.get('task-app.json')
 		document.head.appendChild(jsonTag);
 
-		const cssTag = document.createElement("style");
+		const cssTag = document.createElement("link");
+		cssTag.rel = 'stylesheet'
 		cssTag.id = 'task-app-css'
-		cssTag.textContent = taskAppFiles.get('task-app.css')
+		const cssUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.css')]))
+		cssTag.href = cssUrl
+		//cssTag.textContent = taskAppFiles.get('task-app.css')
 		document.head.appendChild(cssTag);
 		
 		loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
 	}
-	/*if(metadata.path === 'task-app.html'){
-
-		document.getElementById('app-body').innerHTML = str
-	}*/
 }
 
 function listenForTaskAppFromServer(){
