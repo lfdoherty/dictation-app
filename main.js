@@ -85,11 +85,9 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		const jsFile = new File([taskAppFiles.get('task-app.js')], "task-app.js", {
 			type: "application/javascript",
 		});
-		//const jsUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.js')], {
-		//	type: "application/javascript",
-		//  }))
 		const jsUrl = URL.createObjectURL(jsFile)
-		jsTag.src = jsUrl//textContent = taskAppFiles.get('task-app.js')
+		console.log(jsUrl)
+		jsTag.src = jsUrl
 		jsTag.download = 'task-app.js'
 		document.head.appendChild(jsTag);
 
@@ -97,20 +95,23 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		//just for ease of debugging
 		const jsonTag = document.createElement("script");
 		jsonTag.id = 'task-app-json'
-		const jsonUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.json')], {
+		const jsonFile = new File([taskAppFiles.get('task-app.json')], "task-app.json", {
 			type: "application/json",
-		  }))
-		jsonTag.src = jsonUrl//textContent = taskAppFiles.get('task-app.json')
+		});
+		const jsonUrl = URL.createObjectURL(jsonFile)
+		console.log(jsonUrl)
+		jsonTag.src = jsonUrl
 		document.head.appendChild(jsonTag);
 
 		const cssTag = document.createElement("link");
 		cssTag.rel = 'stylesheet'
 		cssTag.id = 'task-app-css'
-		const cssUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.css')], {
+		const cssFile = new File([taskAppFiles.get('task-app.css')], "task-app.css", {
 			type: "text/css",
-		  }))
+		});
+		const cssUrl = URL.createObjectURL(cssFile)
+		console.log(cssUrl)
 		cssTag.href = cssUrl
-		//cssTag.textContent = taskAppFiles.get('task-app.css')
 		document.head.appendChild(cssTag);
 		
 		jsTag.onload = function(){
