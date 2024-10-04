@@ -115,11 +115,27 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		document.head.appendChild(cssTag);
 		
 		jsTag.onload = function(){
-			loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
+			loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')), saveFile)
 		}
 	}
 }
 
+function saveFile(metadata, dataBuf){
+	const enc = new TextEncoder();
+	const header = enc.encode((JSON.stringify(metadata)));
+	const lenTemp = new ArrayBuffer(4)
+	const dv = new DataView(lenTemp)
+	dv.setUint32(0, header.length)
+	data = new Uint8Array(data)
+	const full = new Uint8Array(1+4+header.length + data.length)
+	full[0] = 1;//1=SaveFile
+	full.set(new Uint8Array(lenTemp), 1)
+	full.set(header, 1+4)
+	full.set(data, 1+4 + header.length)
+	//console.log(data)
+	console.log('sent save file: ' + JSON.stringify(metadata) + ' ' + dataBuf.length)
+	socket.send(full)
+}
 function listenForTaskAppFromServer(){
 
 	function subscribeToFile(name){
