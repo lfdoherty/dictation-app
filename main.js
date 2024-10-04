@@ -49,6 +49,7 @@ function openWebsocket(){
 		console.log('local socket error: ', event)
 	});
 	socket.addEventListener("close", (event) => {
+		waitingForAuth = true
 		setTimeout(openWebsocket, 100)
 	});
 }
