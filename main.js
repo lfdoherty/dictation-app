@@ -75,16 +75,17 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		const td = new TextDecoder()
 		const str = td.decode(dataBuf)
 		console.log(str)
-		const iframe = document.createElement('iframe');
-		document.body.appendChild(iframe);
+		//const iframe = document.createElement('iframe');
+		//document.body.appendChild(iframe);
 		/*iframe.contentWindow.document.open();
 		iframe.contentWindow.document.write(str);
 		iframe.contentWindow.document.close();*/
-		iframe.srcdoc = str
-		iframe.onload = function() {
-			console.log('iframe sent onload')
-		}
+		//iframe.srcdoc = str
+		//iframe.onload = function() {
+		//	console.log('iframe sent onload')
+		//}
 		//console.log('TODO - got task-app.html virtual file update')
+		document.getElementById('app-body').innerHTML = str
 	}
 }
 
