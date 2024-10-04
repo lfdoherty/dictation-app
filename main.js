@@ -120,7 +120,7 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 	}
 }
 
-function saveFile(metadata, dataBuf){
+function saveFile(metadata, dataBuf=new Uint8Array(0)){
 	const enc = new TextEncoder();
 	const header = enc.encode((JSON.stringify(metadata)));
 	const lenTemp = new ArrayBuffer(4)
