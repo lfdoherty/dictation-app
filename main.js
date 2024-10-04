@@ -80,10 +80,23 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 	}
 	if(gotAllTaskAppFiles()){
 		document.getElementById('app-body').innerHTML = taskAppFiles.get('task-app.html')
-		var js = document.createElement("script");
+		const js = document.createElement("script");
 		js.id = 'task-app-js'
 		js.textContent = taskAppFiles.get('task-app.js')
 		document.head.appendChild(js);
+
+		
+		//just for ease of debugging
+		const jsonTag = document.createElement("script");
+		jsonTag.id = 'task-app-json'
+		jsonTag.textContent = taskAppFiles.get('task-app.json')
+		document.head.appendChild(jsonTag);
+
+		const cssTag = document.createElement("style");
+		cssTag.id = 'task-app-css'
+		cssTag.textContent = taskAppFiles.get('task-app.css')
+		document.head.appendChild(cssTag);
+		
 		loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
 	}
 	/*if(metadata.path === 'task-app.html'){
