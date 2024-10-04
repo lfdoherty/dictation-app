@@ -80,11 +80,11 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 	}
 	if(gotAllTaskAppFiles()){
 		document.getElementById('app-body').innerHTML = taskAppFiles.get('task-app.html')
-		const js = document.createElement("script");
-		js.id = 'task-app-js'
+		const jsTag = document.createElement("script");
+		jsTag.id = 'task-app-js'
 		const jsUrl = URL.createObjectURL(new Blob([taskAppFiles.get('task-app.js')]))
-		js.src = jsUrl//textContent = taskAppFiles.get('task-app.js')
-		document.head.appendChild(js);
+		jsTag.src = jsUrl//textContent = taskAppFiles.get('task-app.js')
+		document.head.appendChild(jsTag);
 
 		
 		//just for ease of debugging
@@ -102,7 +102,9 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		//cssTag.textContent = taskAppFiles.get('task-app.css')
 		document.head.appendChild(cssTag);
 		
-		loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
+		jsTag.onload = function(){
+			loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
+		}
 	}
 }
 
