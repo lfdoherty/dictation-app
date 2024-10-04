@@ -90,6 +90,7 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		//  }))
 		const jsUrl = URL.createObjectURL(jsFile)
 		jsTag.src = jsUrl//textContent = taskAppFiles.get('task-app.js')
+		jsTag.download = 'task-app.js'
 		document.head.appendChild(jsTag);
 
 		
