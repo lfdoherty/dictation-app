@@ -218,7 +218,7 @@ function stopRecorder(){
 	if(currentRecorder){
 		currentRecorder.finish()
 	}else{
-		document.getElementById('status').textContent = 'stopped fast'
+		//document.getElementById('status').textContent = 'stopped fast'
 	}
 	recordingStarted = false
 }
