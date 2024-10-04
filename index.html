@@ -18,12 +18,15 @@
     
     <script src="./main.js"></script>
     <style>
-        #dictation-button {
-            font-size: 40pt;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
-        }
+#dictation-button {
+    font-size: 40pt;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+#dictation-button-container {
+    position: fixed;
+}
 
 </style>
 
@@ -32,8 +35,8 @@
     <!--
     <div></div><span>Min Decibels to detect speech</span><input id="min-decibels" type="text" value="-40"></input></div>
     -->
-    <div><button id="dictation-button">Hold Down to Dictate</button></div>
     <!--<div>status: <span id="status">?</span></div>-->
     <div id="app-body"></div>
+    <div id="dictation-button-container"><button id="dictation-button">Hold Down to Dictate</button></div>
 </body>
 </html>
