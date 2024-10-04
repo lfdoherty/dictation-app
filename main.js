@@ -68,25 +68,28 @@ function handleMessageFromServer(data){
 }
 
 
-//oooossssss
-
+const taskAppFiles = new Map()
+function gotAllTaskAppFiles(){
+	return taskAppFiles.size === 4;
+}
 function handleVirtualFileUpdate(metadata, dataBuf){
-	if(metadata.path === 'task-app.html'){
+	if(metadata.path.startsWith('task-app.')){
 		const td = new TextDecoder()
 		const str = td.decode(dataBuf)
-		console.log(str)
-		//const iframe = document.createElement('iframe');
-		//document.body.appendChild(iframe);
-		/*iframe.contentWindow.document.open();
-		iframe.contentWindow.document.write(str);
-		iframe.contentWindow.document.close();*/
-		//iframe.srcdoc = str
-		//iframe.onload = function() {
-		//	console.log('iframe sent onload')
-		//}
-		//console.log('TODO - got task-app.html virtual file update')
-		document.getElementById('app-body').innerHTML = str
+		taskAppFiles.set(metadata.path, str)
 	}
+	if(gotAllTaskAppFiles()){
+		document.getElementById('app-body').innerHTML = taskAppFiles.get('task-app.html')
+		var js = document.createElement("script");
+		js.id = 'task-app-js'
+		js.textContent = taskAppFiles.get('task-app.js')
+		document.head.appendChild(js);
+		loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')))
+	}
+	/*if(metadata.path === 'task-app.html'){
+
+		document.getElementById('app-body').innerHTML = str
+	}*/
 }
 
 function listenForTaskAppFromServer(){
