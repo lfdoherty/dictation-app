@@ -257,13 +257,13 @@ function startRecorder(){
 		}
 		currentRecorder = {
 			finish(){
-				document.getElementById('status').textContent = 'stopped recorder'
+				//document.getElementById('status').textContent = 'stopped recorder'
 				recorder.stop();
 				currentRecorder = undefined;
 			}
 		}
 		recorder.start()
-		document.getElementById('status').textContent = 'recording'
+		//document.getElementById('status').textContent = 'recording'
 	})
 	.catch(console.error);
 }
