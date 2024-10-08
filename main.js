@@ -23,12 +23,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
 		loadApp()
 	}
 })
+
+const filesBeingSaved = []//TODO should this just be messagesBeingSent? all messages idempotent anyway?
+
 function openWebsocket(){
 
 	socket = new WebSocket("wss://alienterrarium.ca/dictation-app-wss/");
 	socket.addEventListener("open", (event) => {
-	  socket.send(clientAuthKey)
+		socket.send(clientAuthKey)
 	});
+
 	socket.addEventListener("message", (event) => {
 		if(waitingForAuth){
 			if(event.data === serverAuthKey){
@@ -36,6 +40,14 @@ function openWebsocket(){
 				console.log('got pipe auth')
 
 				listenForTaskAppFromServer()
+
+				if(filesBeingSaved.length > 0){
+					filesBeingSaved.forEach(f => {
+						socket.send(f.msg)
+					})
+					console.log('re-sent ' + filesBeingSaved.length + ' file(s) with new websocket')
+				}
+
 				return
 			}
 		}
@@ -64,6 +76,16 @@ function handleMessageFromServer(data){
 		const td = new TextDecoder()
 		const metadata = JSON.parse(td.decode(metadataBuf))
 		handleVirtualFileUpdate(metadata, dataBuf)
+	}else if(type === 3){//file save ack
+		const fi = filesBeingSaved.find(v => {
+			return v.hash.every((vv, i) => {
+				vv === data[i]
+			})
+		})
+		if(fi === -1){
+			console.log('got file save ack for unknown file')
+			filesBeingSaved.splice(fi, 1)
+		}
 	}
 }
 
@@ -120,7 +142,10 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 	}
 }
 
-function saveFile(metadata, dataBuf=new Uint8Array(0)){
+function uint8ArrayAsHex(arr){
+	return [...arr].map(x => x.toString(16).padStart(2, '0')).join('')
+}
+async function saveFile(metadata, dataBuf=new Uint8Array(0), maybeHash=null){
 	const enc = new TextEncoder();
 	const header = enc.encode((JSON.stringify(metadata)));
 	const lenTemp = new ArrayBuffer(4)
@@ -132,9 +157,17 @@ function saveFile(metadata, dataBuf=new Uint8Array(0)){
 	full.set(new Uint8Array(lenTemp), 1)
 	full.set(header, 1+4)
 	full.set(dataBuf, 1+4 + header.length)
-	//console.log(data)
-	console.log('sent save file: ' + JSON.stringify(metadata) + ' ' + dataBuf.length)
-	socket.send(full)
+
+	const hash = maybeHash?maybeHash:(await window.crypto.subtle.digest("SHA-256", full));
+	filesBeingSaved.push({msg: full, hash: hash})
+
+	if(!waitingForAuth){
+		console.log('sent save file: ' + JSON.stringify(metadata) + ' ' + dataBuf.length + ' ' + uint8ArrayAsHex(hash))
+		socket.send(full)
+	}else{
+		console.log('added save file to filesBeingSaved for later: ' + JSON.stringify(metadata) + ' ' + dataBuf.length + ' ' + uint8ArrayAsHex(hash))
+		//once auth is received, filesBeingSaved will be re-sent
+	}
 }
 function listenForTaskAppFromServer(){
 
@@ -159,6 +192,7 @@ function listenForTaskAppFromServer(){
 function sendAudioToServer(mimetype, data){
 	console.log(mimetype, data.byteLength)
 
+
 	if(!mimetype.startsWith('audio/webm')){
 		console.log('todo support: ' + mimetype)
 		return
@@ -173,19 +207,6 @@ function sendAudioToServer(mimetype, data){
 		return
 	}
 	saveFile({type: 'file', tags: tags, name: filename, mimetype: mimetype}, data)
-	/*const enc = new TextEncoder();
-	const header = enc.encode((JSON.stringify()));
-	const lenTemp = new ArrayBuffer(4)
-	const dv = new DataView(lenTemp)
-	dv.setUint32(0, header.length)
-	data = new Uint8Array(data)
-	const full = new Uint8Array(1+4+header.length + data.length)
-	full[0] = 1;//1=SaveFile
-	full.set(new Uint8Array(lenTemp), 1)
-	full.set(header, 1+4)
-	full.set(data, 1+4 + header.length)
-	console.log(data)
-	socket.send(full)*/
 }
 
 let currentRecorder
