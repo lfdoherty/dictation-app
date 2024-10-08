@@ -160,7 +160,7 @@ async function saveFile(metadata, dataBuf=new Uint8Array(0), maybeHash=null){
 	full.set(header, 1+4)
 	full.set(dataBuf, 1+4 + header.length)
 
-	const hash = maybeHash?maybeHash:(await window.crypto.subtle.digest("SHA-256", full));
+	const hash = maybeHash?maybeHash:(new Uint8Array(await window.crypto.subtle.digest("SHA-256", full)));
 	filesBeingSaved.push({msg: full, hash: hash})
 
 	if(!waitingForAuth){
