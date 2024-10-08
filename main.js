@@ -84,6 +84,8 @@ function handleMessageFromServer(data){
 		})
 		if(fi === -1){
 			console.log('got file save ack for unknown file')
+		}else{
+			console.log('got file save ack')
 			filesBeingSaved.splice(fi, 1)
 		}
 	}
