@@ -221,9 +221,12 @@ function stopRecorder(){
 		//document.getElementById('status').textContent = 'stopped fast'
 	}
 	recordingStarted = false
+	document.getElementById('dictation-button').classList.remove('recording')
 }
 function startRecorder(){
 	recordingStarted = true
+
+	document.getElementById('dictation-button').classList.add('recording')
 
 	navigator.mediaDevices.getUserMedia({
 		audio: true,
