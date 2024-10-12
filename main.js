@@ -97,12 +97,13 @@ function gotAllTaskAppFiles(){
 	return taskAppFiles.size === 4;
 }
 function handleVirtualFileUpdate(metadata, dataBuf){
+	const didNotHaveBefore = !gotAllTaskAppFiles();
 	if(metadata.path.startsWith('task-app.')){
 		const td = new TextDecoder()
 		const str = td.decode(dataBuf)
 		taskAppFiles.set(metadata.path, str)
 	}
-	if(gotAllTaskAppFiles()){
+	if((didNotHaveBefore && gotAllTaskAppFiles())){
 		document.getElementById('app-body').innerHTML = taskAppFiles.get('task-app.html')
 		const jsTag = document.createElement("script");
 		jsTag.id = 'task-app-js'
@@ -141,6 +142,8 @@ function handleVirtualFileUpdate(metadata, dataBuf){
 		jsTag.onload = function(){
 			loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')), saveFile)
 		}
+	}else if(metadata.path === 'task-app.json'){
+		loadTaskApp(JSON.parse(taskAppFiles.get('task-app.json')), saveFile)
 	}
 }
 
